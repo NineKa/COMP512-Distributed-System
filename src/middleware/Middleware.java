@@ -32,40 +32,26 @@ public class Middleware {
 
     public Middleware(){
         serverMap = new HashMap<>();
-        threadPool = Executors.newFixedThreadPool(5); // FIXME: do not use fixed thread pool
+        threadPool = Executors.newFixedThreadPool(5); // init thread pool // FIXME: do not use fixed thread pool
     }
     public static void main(String args[]) {
         Middleware m = new Middleware();
         m.init();
     }
-    // thread pool to listen incoming msg
 
     public void init(){
-        // init thread pool
-
-        // listen for incoming msg
 
         // new msg -> dispatch a thread to execute it
         try {
             final ServerSocket serverSocket = new ServerSocket(port);
-
             System.out.println("Server is running on port: " + port);
-
             Thread serverThread = new Thread(new Runnable() {
                 public void run() {
                     try {
+                        // listen for incoming msg
                         while (true) {
+                            // new msg (new client) -> dispatch a thread to execute it
                             Socket s = serverSocket.accept();
-                            System.out.println("connected");
-//                            ObjectInputStream in = new ObjectInputStream(s.getInputStream());
-//                            try{
-//
-//                                Msg m = (Msg) in.readObject();
-//                            }
-//                            catch (Exception e){
-//                                e.printStackTrace();
-//                            }
-//
                             threadPool.submit(new MiddlewareThread(s));
                         }
                     } catch (IOException e) {
@@ -108,7 +94,7 @@ class MiddlewareThread implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        while (true) {
+        while (true) {
             try {
                 Msg currentMsg = (Msg) in.readObject();
                 System.out.println(currentMsg);
@@ -116,11 +102,13 @@ class MiddlewareThread implements Runnable {
                     msgs.add(currentMsg);
                     System.out.print(currentMsg.cmd);
                     Reply r = processMsg(currentMsg);
+                    this.out.writeObject(r);
+
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-//        }
+        }
 
 
     }
@@ -128,7 +116,7 @@ class MiddlewareThread implements Runnable {
     private Reply processMsg(Msg m){
 
         // analyze client msg
-        switch (currentMsg.cmd) {
+        switch (m.cmd) {
             case addCars:
                 //                    serverMap.get();
                 // send to server

@@ -35,30 +35,18 @@ public class ClientSocket {
     }
 
     public Reply execute(Msg m) {
-        send(m);
-        return read();
-    }
-
-
-    public void send(Msg m) {
+        Reply r = null;
         try {
             out.writeObject(m);
             out.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Reply read() {
-        Reply r = null;
-        try {
             r = (Reply) in.readObject();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         return r;
     }
+
+
 
 
     /**
