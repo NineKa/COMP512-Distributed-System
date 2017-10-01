@@ -14,11 +14,11 @@ import java.util.Queue;
  */
 
 public abstract class ServerThread implements Runnable {
-    Queue<Msg> msgs;    // msg history
-    Msg currentMsg;
-    Socket s;
-    ObjectOutputStream out;
-    ObjectInputStream in;
+    protected Queue<Msg> msgs;    // msg history
+    protected Msg currentMsg;
+    protected Socket s;
+    protected ObjectOutputStream out;
+    protected ObjectInputStream in;
 
     public ServerThread(Socket s) {
         this.s = s;

@@ -19,12 +19,14 @@ public class ClientSocket {
     ObjectInputStream in;
 
     // server address
-    String server = "localhost";
-    int port = 1099;
+    String host;
+    int port;
 
-    public ClientSocket(){
+    public ClientSocket(String host, int port){
+        this.host = host;
+        this.port = port;
         try {
-            s = new Socket(server, port);
+            s = new Socket(host, port);
             this.out = new ObjectOutputStream(s.getOutputStream());
             this.in = new ObjectInputStream(s.getInputStream());
 

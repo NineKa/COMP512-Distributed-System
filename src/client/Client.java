@@ -16,7 +16,9 @@ public class Client {
 
     public static void main(String args[]) {
         Client obj = new Client();
-        ClientSocket cs = new ClientSocket();
+        String server = "localhost";
+        int port = 1099;
+        ClientSocket cs = new ClientSocket(server, port);   // connected with middleware server
 
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         String command = "";
@@ -34,8 +36,7 @@ public class Client {
         String location;
 
 
-        String server = "localhost";
-        int port = 1099;
+
         if (args.length > 0) {
             server = args[0];
         }
