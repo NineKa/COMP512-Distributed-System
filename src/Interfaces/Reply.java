@@ -8,5 +8,5 @@ import java.util.Vector;
  */
 public class Reply implements Serializable{
     public boolean isSuccess;
-    public Vector response;
+    public  Vector response;
 }
