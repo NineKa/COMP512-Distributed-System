@@ -7,6 +7,8 @@ import Interfaces.ServerType;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -86,17 +88,23 @@ class MiddlewareThread implements Runnable {
     Queue<Msg> msgs;    // msg history
     Msg currentMsg;
     Socket s;
+    ObjectOutputStream out;
     ObjectInputStream in;
 
     public MiddlewareThread(Socket s) {
         this.s = s;
         this.msgs = new LinkedList<Msg>();
+        try{
+        this.out = new ObjectOutputStream(this.s.getOutputStream());
+        this.in = new ObjectInputStream(this.s.getInputStream());}
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void run() {
         try {
-            in = new ObjectInputStream(s.getInputStream());
         } catch (Exception e) {
             e.printStackTrace();
         }

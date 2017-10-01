@@ -26,7 +26,6 @@ public class ClientSocket {
         try {
             s = new Socket(server, port);
             this.out = new ObjectOutputStream(s.getOutputStream());
-            this.out.flush();
             this.in = new ObjectInputStream(s.getInputStream());
 
         }
