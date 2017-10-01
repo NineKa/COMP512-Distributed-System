@@ -32,29 +32,38 @@ class MiddlewareThread extends ServerThread {
     }
 
     public Reply processMsg(Msg m){
-        Reply r = new Reply(false, null);
+        ResourceManagerInfo rm = null;
+        ClientSocket cs = null;
+        Reply r;
+
         // analyze client msg
+        // select RM
         switch (m.cmd) {
             case addCars:
                 // send to server
-                ResourceManagerInfo rm = selectRM(ServerType.Car);
-                ClientSocket cs = RMConnections.get(rm);
-                r = cs.execute(m);
-//                System.out.print(r);
-
-                // forward result to client
-                try {
-                    this.out.writeObject(r);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-                // maybe send reserve cmd to server
+                rm = selectRM(ServerType.Car);
+                // TODO: maybe send reserve cmd to server
                 break;
+
             case addRooms:
-                break;
-            case addFlight:
+                // send to server
+                rm = selectRM(ServerType.Room);
                 break;
 
+            case addFlight:
+                // send to server
+                rm = selectRM(ServerType.Flight);
+                break;
+
+        }
+
+        // forward result to client
+        if (rm != null) cs = RMConnections.get(rm);
+        r = cs.execute(m);
+        try {
+            this.out.writeObject(r);
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return r;
     }

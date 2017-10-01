@@ -88,6 +88,12 @@ public class Client {
 
                     try {
 
+                        // test input
+                        Id = obj.getInt(arguments.elementAt(1));
+                        flightNum = obj.getInt(arguments.elementAt(2));
+                        flightSeats = obj.getInt(arguments.elementAt(3));
+                        flightPrice = obj.getInt(arguments.elementAt(4));
+
                         // TODO: refactor this
                         // serialize
                         Msg m = new Msg();
@@ -115,6 +121,13 @@ public class Client {
                     System.out.println("Add Number of Cars: " + arguments.elementAt(3));
                     System.out.println("Set Price: " + arguments.elementAt(4));
                     try {
+
+                        Id = obj.getInt(arguments.elementAt(1));
+                        location = obj.getString(arguments.elementAt(2));
+                        numCars = obj.getInt(arguments.elementAt(3));
+                        price = obj.getInt(arguments.elementAt(4));
+
+
                         // serialize
                         Msg m = new Msg();
                         m.arg = arguments;
@@ -141,6 +154,12 @@ public class Client {
                     System.out.println("Add Number of Rooms: " + arguments.elementAt(3));
                     System.out.println("Set Price: " + arguments.elementAt(4));
                     try {
+
+                        Id = obj.getInt(arguments.elementAt(1));
+                        location = obj.getString(arguments.elementAt(2));
+                        numRooms = obj.getInt(arguments.elementAt(3));
+                        price = obj.getInt(arguments.elementAt(4));
+
                         // serialize
                         Msg m = new Msg();
                         m.arg = arguments;
