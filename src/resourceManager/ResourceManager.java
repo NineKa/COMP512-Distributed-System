@@ -13,11 +13,13 @@ import java.util.Vector;
  * Created by emol on 9/30/17.
  */
 public class ResourceManager extends Server {
-    ResourceManagerInfo info;
+    protected ResourceManagerInfo info;
+    protected RMHashtable m_itemHT;
 
     public ResourceManager(ResourceManagerInfo info){
         super(info.host, info.port);
         this.info = info;
+        this.m_itemHT = new RMHashtable();
     }
 
 
@@ -48,6 +50,6 @@ public class ResourceManager extends Server {
 
     @Override
     public ServerThread createServerThread(Socket s) {
-        return new ResourceManagerThread(s);
+        return new ResourceManagerThread(s, m_itemHT);
     }
 }

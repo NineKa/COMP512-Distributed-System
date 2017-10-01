@@ -39,7 +39,7 @@ public abstract class ServerThread implements Runnable {
                 System.out.println(currentMsg);
                 if (currentMsg != null){
                     msgs.add(currentMsg);
-                    System.out.print(currentMsg.cmd);
+//                    System.out.print(currentMsg.cmd);
                     Reply r = processMsg(currentMsg);
                     this.out.writeObject(r);
                 }

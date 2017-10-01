@@ -3,6 +3,7 @@ package middleware;
 import Common.Server;
 import Common.ServerThread;
 import Interfaces.ServerType;
+import resourceManager.RMHashtable;
 import resourceManager.ResourceManagerInfo;
 import client.ClientSocket;
 
@@ -21,12 +22,15 @@ public class Middleware extends Server{
     HashMap<ServerType, Set<ResourceManagerInfo>> resourceManagerInfo;
     HashMap<ResourceManagerInfo, ClientSocket> RMConnections;
 
+    // middleware also stores customer info (so middleware is also a RM for customer)
+    protected RMHashtable m_itemHT; // all data relevant to it
+
     public Middleware(String host, int port){
         super(host, port);
+        this.m_itemHT = new RMHashtable();
+
         resourceManagerInfo = new HashMap<>();
-
-
-        // FIXME: resourceManager data
+        // TODO: get resourceManager data from user input during startup
         ResourceManagerInfo r1 = new ResourceManagerInfo(ServerType.Car, "localhost", 1100);
         Set<ResourceManagerInfo> r1set = new HashSet<>();
         r1set.add(r1);
@@ -58,10 +62,9 @@ public class Middleware extends Server{
     }
     @Override
     public ServerThread createServerThread(Socket s) {
-        return new MiddlewareThread(s, resourceManagerInfo, RMConnections);
+        return new MiddlewareThread(s, resourceManagerInfo, RMConnections, m_itemHT);
     }
 }
-
 
 
 

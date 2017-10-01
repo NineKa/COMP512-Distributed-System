@@ -9,4 +9,9 @@ import java.util.Vector;
 public class Reply implements Serializable{
     public boolean isSuccess;
     public  Vector response;
+
+    public Reply(boolean isSuccess, Vector response){
+        this.isSuccess = isSuccess;
+        this.response = response;
+    }
 }

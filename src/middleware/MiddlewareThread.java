@@ -4,6 +4,8 @@ import Common.ServerThread;
 import Interfaces.Msg;
 import Interfaces.Reply;
 import Interfaces.ServerType;
+import resourceManager.RMHashtable;
+import resourceManager.RMImpl;
 import resourceManager.ResourceManagerInfo;
 import client.ClientSocket;
 
@@ -17,25 +19,28 @@ import java.util.Set;
 class MiddlewareThread extends ServerThread {
     HashMap<ServerType, Set<ResourceManagerInfo>> resourceManagerInfo;
     HashMap<ResourceManagerInfo, ClientSocket> RMConnections;
+    RMImpl RM;  // RM for customer
 
     public MiddlewareThread(Socket s,
                             HashMap<ServerType, Set<ResourceManagerInfo>> resourceManagerInfo,
-                            HashMap<ResourceManagerInfo, ClientSocket> RMConnections) {
+                            HashMap<ResourceManagerInfo, ClientSocket> RMConnections,
+                            RMHashtable m_itemHT) {
         super(s);
         this.resourceManagerInfo = resourceManagerInfo;
         this.RMConnections = RMConnections;
+        this.RM = new RMImpl(m_itemHT);
     }
 
     public Reply processMsg(Msg m){
-
+        Reply r = new Reply(false, null);
         // analyze client msg
         switch (m.cmd) {
             case addCars:
                 // send to server
                 ResourceManagerInfo rm = selectRM(ServerType.Car);
                 ClientSocket cs = RMConnections.get(rm);
-                Reply r = cs.execute(m);
-                System.out.print(r);
+                r = cs.execute(m);
+//                System.out.print(r);
 
                 // forward result to client
                 try {
@@ -51,8 +56,6 @@ class MiddlewareThread extends ServerThread {
                 break;
 
         }
-        Reply r = new Reply();
-        r.isSuccess = true;
         return r;
     }
 
