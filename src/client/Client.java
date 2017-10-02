@@ -205,10 +205,13 @@ public class Client {
                     try {
                         Id = obj.getInt(arguments.elementAt(1));
                         flightNum = obj.getInt(arguments.elementAt(2));
-//                        if (rm.deleteFlight(Id, flightNum))
-//                            System.out.println("Flight Deleted");
-//                        else
-//                            System.out.println("Flight could not be deleted");
+
+                        m.cmd = CommandType.deleteFlight;
+                        Reply r = cs.execute(m);
+                        if (r.isSuccess)
+                            System.out.println("Flight Deleted");
+                        else
+                            System.out.println("Flight could not be deleted");
                     } catch (Exception e) {
                         System.out.println("EXCEPTION:");
                         System.out.println(e.getMessage());
@@ -227,10 +230,12 @@ public class Client {
                         Id = obj.getInt(arguments.elementAt(1));
                         location = obj.getString(arguments.elementAt(2));
 
-//                        if (rm.deleteCars(Id, location))
-//                            System.out.println("Cars Deleted");
-//                        else
-//                            System.out.println("Cars could not be deleted");
+                        m.cmd = CommandType.deleteCars;
+                        Reply r = cs.execute(m);
+                        if (r.isSuccess)
+                            System.out.println("Cars Deleted");
+                        else
+                            System.out.println("Cars could not be deleted");
                     } catch (Exception e) {
                         System.out.println("EXCEPTION:");
                         System.out.println(e.getMessage());
@@ -248,10 +253,13 @@ public class Client {
                     try {
                         Id = obj.getInt(arguments.elementAt(1));
                         location = obj.getString(arguments.elementAt(2));
-//                        if (rm.deleteRooms(Id, location))
-//                            System.out.println("Rooms Deleted");
-//                        else
-//                            System.out.println("Rooms could not be deleted");
+
+                        m.cmd = CommandType.deleteRooms;
+                        Reply r = cs.execute(m);
+                        if (r.isSuccess)
+                            System.out.println("Rooms Deleted");
+                        else
+                            System.out.println("Rooms could not be deleted");
                     } catch (Exception e) {
                         System.out.println("EXCEPTION:");
                         System.out.println(e.getMessage());

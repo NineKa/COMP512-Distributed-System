@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import static java.lang.System.exit;
+
 /**
  * Created by emol on 10/1/17.
  */
@@ -45,6 +47,7 @@ public abstract class ServerThread implements Runnable {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                exit(1);
             }
         }
 

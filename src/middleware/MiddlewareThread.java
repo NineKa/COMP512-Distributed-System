@@ -64,6 +64,21 @@ class MiddlewareThread extends ServerThread {
                         Integer.parseInt((String) m.arg.elementAt(1)),
                         Integer.parseInt((String) m.arg.elementAt(2)));
                 return new Reply(isSuccess, null);
+
+            case deleteRooms:
+                rm = selectRM(ServerType.Room);
+                break;
+
+            case deleteFlight:
+                rm = selectRM(ServerType.Flight);
+                break;
+
+            case deleteCars:
+                rm = selectRM(ServerType.Car);
+                break;
+
+            case deleteCustomer:
+                break;
         }
 
         // if rm is not null (rm exists && not local rm)

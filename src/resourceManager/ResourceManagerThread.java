@@ -48,6 +48,27 @@ public class ResourceManagerThread extends ServerThread {
                         Integer.parseInt((String) m.arg.elementAt(3)),
                         Integer.parseInt((String) m.arg.elementAt(4)));
                 break;
+
+            case deleteRooms:
+                isSuccess = RM.deleteRooms(
+                        Integer.parseInt((String) m.arg.elementAt(1)),
+                        (String) m.arg.elementAt(2));
+                break;
+
+            case deleteFlight:
+                isSuccess = RM.deleteFlight(
+                        Integer.parseInt((String) m.arg.elementAt(1)),
+                        Integer.parseInt((String) m.arg.elementAt(2)));
+                break;
+
+            case deleteCars:
+                isSuccess = RM.deleteCars(
+                        Integer.parseInt((String) m.arg.elementAt(1)),
+                        (String) m.arg.elementAt(2));
+                break;
+
+            case deleteCustomer:
+                break;
         }
 
 
