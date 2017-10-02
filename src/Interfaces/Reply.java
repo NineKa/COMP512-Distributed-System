@@ -31,6 +31,7 @@ public class Reply implements Serializable{
         replyFormat.put(CommandType.deleteFlight, null);
         replyFormat.put(CommandType.deleteRooms, null);
         replyFormat.put(CommandType.deleteCustomer, null);
+        replyFormat.put(CommandType.reserveCar, new ArgType[] { ArgType.INT, ArgType.STRING }); // price, carkey
     }
 }
 

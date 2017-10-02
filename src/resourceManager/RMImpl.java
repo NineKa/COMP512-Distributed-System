@@ -1,5 +1,9 @@
 package resourceManager;
 
+import Interfaces.Msg;
+import Interfaces.Reply;
+import client.ClientSocket;
+
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -16,7 +20,7 @@ public class RMImpl {
 
 
     // Reads a data item
-    private RMItem readData( int id, String key )
+    public RMItem readData( int id, String key )
     {
         synchronized(m_itemHT) {
             return (RMItem) m_itemHT.get(key);
@@ -24,7 +28,7 @@ public class RMImpl {
     }
 
     // Writes a data item
-    private void writeData( int id, String key, RMItem value )
+    public void writeData( int id, String key, RMItem value )
     {
         synchronized(m_itemHT) {
             m_itemHT.put(key, value);
@@ -32,7 +36,7 @@ public class RMImpl {
     }
 
     // Remove the item out of storage
-    protected RMItem removeData(int id, String key) {
+    public RMItem removeData(int id, String key) {
         synchronized(m_itemHT) {
             return (RMItem)m_itemHT.remove(key);
         }
@@ -88,35 +92,54 @@ public class RMImpl {
     }
 
 
-    // reserve an item
-    protected boolean reserveItem(int id, int customerID, String key, String location) {
-        Trace.info("RM::reserveItem( " + id + ", customer=" + customerID + ", " +key+ ", "+location+" ) called" );
+    // called in middleware server
+    public Reply customerReserve(int id, int customerID, String location, ClientSocket cs, Msg m){
+        Reply r = new Reply(false, new Vector());
         // Read customer object if it exists (and read lock it)
         Customer cust = (Customer) readData( id, Customer.getKey(customerID) );
-        if ( cust == null ) {
-            Trace.warn("RM::reserveItem( " + id + ", " + customerID + ", " + key + ", "+location+")  failed--customer doesn't exist" );
-            return false;
+        if ( cust == null ) {{
+            Trace.warn("RM::reserveItem( " + id + ", " + customerID + ", " + location+")  failed--customer doesn't exist" );
+            return r;
+        }}
+
+        r = cs.execute(m);
+
+        if (r.isSuccess){
+            String key = (String) r.response.elementAt(1);
+            int price = (int) r.response.elementAt(0);
+            Trace.info("RM::reserveItem( " + id + ", customer=" + customerID + ", " +key+ ", "+location+" ) called" );
+            cust.reserve( key, location, price);
+            writeData( id, cust.getKey(), cust );
         }
+        return r;
+    }
+
+    // reserve an item
+    protected Reply reserveItem(int id, int customerID, String key, String location) {
+        Reply r = new Reply(false, new Vector());
+
+        Trace.info("RM::reserveItem( " + id + ", customer=" + customerID + ", " +key+ ", "+location+" ) called" );
+
 
         // check if the item is available
         ReservableItem item = (ReservableItem)readData(id, key);
         if ( item == null ) {
             Trace.warn("RM::reserveItem( " + id + ", " + customerID + ", " + key+", " +location+") failed--item doesn't exist" );
-            return false;
         } else if (item.getCount()==0) {
             Trace.warn("RM::reserveItem( " + id + ", " + customerID + ", " + key+", " + location+") failed--No more items" );
-            return false;
         } else {
-            cust.reserve( key, location, item.getPrice());
-            writeData( id, cust.getKey(), cust );
 
             // decrease the number of available items in the storage
             item.setCount(item.getCount() - 1);
             item.setReserved(item.getReserved()+1);
 
             Trace.info("RM::reserveItem( " + id + ", " + customerID + ", " + key + ", " +location+") succeeded" );
-            return true;
+            r.isSuccess = true;
+            r.response.add(item.getPrice());
+            r.response.add(item.getKey());
         }
+
+        return r;
     }
 
     // Create a new flight, or add seats to existing flight
@@ -385,19 +408,19 @@ public class RMImpl {
 
 
     // Adds car reservation to this customer.
-    public boolean reserveCar(int id, int customerID, String location)
+    public Reply reserveCar(int id, int customerID, String location)
     {
         return reserveItem(id, customerID, Car.getKey(location), location);
     }
 
 
     // Adds room reservation to this customer.
-    public boolean reserveRoom(int id, int customerID, String location)
+    public Reply reserveRoom(int id, int customerID, String location)
     {
         return reserveItem(id, customerID, Hotel.getKey(location), location);
     }
     // Adds flight reservation to this customer.
-    public boolean reserveFlight(int id, int customerID, int flightNum)
+    public Reply reserveFlight(int id, int customerID, int flightNum)
     {
         return reserveItem(id, customerID, Flight.getKey(flightNum), String.valueOf(flightNum));
     }

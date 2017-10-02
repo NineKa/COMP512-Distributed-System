@@ -471,10 +471,13 @@ public class Client {
                         Id = obj.getInt(arguments.elementAt(1));
                         int customer = obj.getInt(arguments.elementAt(2));
                         flightNum = obj.getInt(arguments.elementAt(3));
-//                        if (rm.reserveFlight(Id, customer, flightNum))
-//                            System.out.println("Flight Reserved");
-//                        else
-//                            System.out.println("Flight could not be reserved.");
+
+                        m.cmd = CommandType.reserveFlight;
+                        Reply r = cs.execute(m);
+                        if (r.isSuccess)
+                            System.out.println("Flight Reserved");
+                        else
+                            System.out.println("Flight could not be reserved.");
                     } catch (Exception e) {
                         System.out.println("EXCEPTION:");
                         System.out.println(e.getMessage());
@@ -496,10 +499,13 @@ public class Client {
                         int customer = obj.getInt(arguments.elementAt(2));
                         location = obj.getString(arguments.elementAt(3));
 
-//                        if (rm.reserveCar(Id, customer, location))
-//                            System.out.println("Car Reserved");
-//                        else
-//                            System.out.println("Car could not be reserved.");
+
+                        m.cmd = CommandType.reserveCar;
+                        Reply r = cs.execute(m);
+                        if (r.isSuccess)
+                            System.out.println("Car Reserved");
+                        else
+                            System.out.println("Car could not be reserved.");
                     } catch (Exception e) {
                         System.out.println("EXCEPTION:");
                         System.out.println(e.getMessage());
@@ -520,10 +526,12 @@ public class Client {
                         int customer = obj.getInt(arguments.elementAt(2));
                         location = obj.getString(arguments.elementAt(3));
 
-//                        if (rm.reserveRoom(Id, customer, location))
-//                            System.out.println("Room Reserved");
-//                        else
-//                            System.out.println("Room could not be reserved.");
+                        m.cmd = CommandType.reserveRoom;
+                        Reply r = cs.execute(m);
+                        if (r.isSuccess)
+                            System.out.println("Room Reserved");
+                        else
+                            System.out.println("Room could not be reserved.");
                     } catch (Exception e) {
                         System.out.println("EXCEPTION:");
                         System.out.println(e.getMessage());

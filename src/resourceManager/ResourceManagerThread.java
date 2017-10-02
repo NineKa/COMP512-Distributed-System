@@ -109,6 +109,19 @@ public class ResourceManagerThread extends ServerThread {
                 isSuccess = true;
                 break;
 
+            case reserveCar:
+                return RM.reserveCar(
+                        Integer.parseInt((String) m.arg.elementAt(1)),
+                        Integer.parseInt((String) m.arg.elementAt(2)),
+                        (String) m.arg.elementAt(3));
+
+            case reserveFlight:
+                break;
+
+            case reserveRoom:
+                break;
+
+
         }
 
 

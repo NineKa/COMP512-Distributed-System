@@ -4,9 +4,7 @@ import Common.ServerThread;
 import Interfaces.Msg;
 import Interfaces.Reply;
 import Interfaces.ServerType;
-import resourceManager.RMHashtable;
-import resourceManager.RMImpl;
-import resourceManager.ResourceManagerInfo;
+import resourceManager.*;
 import client.ClientSocket;
 
 import java.net.Socket;
@@ -111,10 +109,30 @@ class MiddlewareThread extends ServerThread {
             case queryCustomerInfo:
                 String bill = localRM.queryCustomerInfo(
                         Integer.parseInt((String) m.arg.elementAt(1)),
-                        Integer.parseInt((String) m.arg.elementAt(1)));
+                        Integer.parseInt((String) m.arg.elementAt(2)));
                 r = new Reply(true, new Vector<>());
                 r.response.add(bill);
                 return r;
+
+            case reserveCar:
+                rm = selectRM(ServerType.Car);
+                cs = RMConnections.get(rm);
+                return localRM.customerReserve(
+                        Integer.parseInt((String) m.arg.elementAt(1)),
+                        Integer.parseInt((String) m.arg.elementAt(2)),
+                        (String) m.arg.elementAt(3),
+                        cs,
+                        m
+                );
+
+            case reserveFlight:
+                rm = selectRM(ServerType.Flight);
+                break;
+
+            case reserveRoom:
+                rm = selectRM(ServerType.Room);
+                break;
+
 
         }
 
