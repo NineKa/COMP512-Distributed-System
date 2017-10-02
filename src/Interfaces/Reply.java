@@ -27,6 +27,10 @@ public class Reply implements Serializable{
         replyFormat.put(CommandType.addRooms, null);
         replyFormat.put(CommandType.newCustomer, new ArgType[] { ArgType.INT });    // cid
         replyFormat.put(CommandType.newcustomerid, null);
+        replyFormat.put(CommandType.deleteCars, null);
+        replyFormat.put(CommandType.deleteFlight, null);
+        replyFormat.put(CommandType.deleteRooms, null);
+        replyFormat.put(CommandType.deleteCustomer, null);
     }
 }
 

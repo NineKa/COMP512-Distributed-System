@@ -277,10 +277,13 @@ public class Client {
                     try {
                         Id = obj.getInt(arguments.elementAt(1));
                         int customer = obj.getInt(arguments.elementAt(2));
-//                        if (rm.deleteCustomer(Id, customer))
-//                            System.out.println("Customer Deleted");
-//                        else
-//                            System.out.println("Customer could not be deleted");
+
+                        m.cmd = CommandType.deleteCustomer;
+                        Reply r = cs.execute(m);
+                        if (r.isSuccess)
+                            System.out.println("Customer Deleted");
+                        else
+                            System.out.println("Customer could not be deleted");
                     } catch (Exception e) {
                         System.out.println("EXCEPTION:");
                         System.out.println(e.getMessage());

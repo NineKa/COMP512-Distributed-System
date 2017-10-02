@@ -78,7 +78,10 @@ class MiddlewareThread extends ServerThread {
                 break;
 
             case deleteCustomer:
-                break;
+                isSuccess = localRM.deleteCustomer(
+                        Integer.parseInt((String) m.arg.elementAt(1)),
+                        Integer.parseInt((String) m.arg.elementAt(2)));
+                return new Reply(isSuccess, null);
         }
 
         // if rm is not null (rm exists && not local rm)
