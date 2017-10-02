@@ -298,16 +298,21 @@ public class Client {
                     }
                     System.out.println("Querying a flight using id: " + arguments.elementAt(1));
                     System.out.println("Flight number: " + arguments.elementAt(2));
-//                    try {
-//                        Id = obj.getInt(arguments.elementAt(1));
-//                        flightNum = obj.getInt(arguments.elementAt(2));
-//                        int seats = rm.queryFlight(Id, flightNum);
-//                        System.out.println("Number of seats available:" + seats);
-//                    } catch (Exception e) {
-//                        System.out.println("EXCEPTION:");
-//                        System.out.println(e.getMessage());
-//                        e.printStackTrace();
-//                    }
+                    try {
+                        Id = obj.getInt(arguments.elementAt(1));
+                        flightNum = obj.getInt(arguments.elementAt(2));
+
+                        m.cmd = CommandType.queryFlight;
+                        Reply r = cs.execute(m);
+                        if (r.isSuccess)
+                            System.out.println("Number of seats available:" + r.response.elementAt(0));
+                        else
+                            System.out.println("Cannot query this flight.");
+                    } catch (Exception e) {
+                        System.out.println("EXCEPTION:");
+                        System.out.println(e.getMessage());
+                        e.printStackTrace();
+                    }
                     break;
 
                 case 11: //querying a Car Location
@@ -320,8 +325,13 @@ public class Client {
                     try {
                         Id = obj.getInt(arguments.elementAt(1));
                         location = obj.getString(arguments.elementAt(2));
-//                        numCars = rm.queryCars(Id, location);
-//                        System.out.println("number of Cars at this location:" + numCars);
+
+                        m.cmd = CommandType.queryCars;
+                        Reply r = cs.execute(m);
+                        if (r.isSuccess)
+                            System.out.println("Number of Cars at this location:" + r.response.elementAt(0));
+                        else
+                            System.out.println("Cannot query this car location.");
                     } catch (Exception e) {
                         System.out.println("EXCEPTION:");
                         System.out.println(e.getMessage());
@@ -339,8 +349,13 @@ public class Client {
                     try {
                         Id = obj.getInt(arguments.elementAt(1));
                         location = obj.getString(arguments.elementAt(2));
-//                        numRooms = rm.queryRooms(Id, location);
-//                        System.out.println("number of Rooms at this location:" + numRooms);
+
+                        m.cmd = CommandType.queryRooms;
+                        Reply r = cs.execute(m);
+                        if (r.isSuccess)
+                            System.out.println("number of Rooms at this location:" + r.response.elementAt(0));
+                        else
+                            System.out.println("Cannot query this room location.");
                     } catch (Exception e) {
                         System.out.println("EXCEPTION:");
                         System.out.println(e.getMessage());
@@ -358,8 +373,13 @@ public class Client {
                     try {
                         Id = obj.getInt(arguments.elementAt(1));
                         int customer = obj.getInt(arguments.elementAt(2));
-//                        String bill = rm.queryCustomerInfo(Id, customer);
-//                        System.out.println("Customer info:" + bill);
+
+                        m.cmd = CommandType.queryCustomerInfo;
+                        Reply r = cs.execute(m);
+                        if (r.isSuccess)
+                            System.out.println("Customer info:" + r.response.elementAt(0));
+                        else
+                            System.out.println("Cannot query this customer.");
                     } catch (Exception e) {
                         System.out.println("EXCEPTION:");
                         System.out.println(e.getMessage());
@@ -377,8 +397,13 @@ public class Client {
                     try {
                         Id = obj.getInt(arguments.elementAt(1));
                         flightNum = obj.getInt(arguments.elementAt(2));
-//                        price = rm.queryFlightPrice(Id, flightNum);
-//                        System.out.println("Price of a seat:" + price);
+
+                        m.cmd = CommandType.queryFlightPrice;
+                        Reply r = cs.execute(m);
+                        if (r.isSuccess)
+                            System.out.println("Price of a seat:" + r.response.elementAt(0));
+                        else
+                            System.out.println("Query failed.");
                     } catch (Exception e) {
                         System.out.println("EXCEPTION:");
                         System.out.println(e.getMessage());
@@ -396,8 +421,13 @@ public class Client {
                     try {
                         Id = obj.getInt(arguments.elementAt(1));
                         location = obj.getString(arguments.elementAt(2));
-//                        price = rm.queryCarsPrice(Id, location);
-//                        System.out.println("Price of a car at this location:" + price);
+
+                        m.cmd = CommandType.queryCarsPrice;
+                        Reply r = cs.execute(m);
+                        if (r.isSuccess)
+                            System.out.println("Price of a car at this location:" + r.response.elementAt(0));
+                        else
+                            System.out.println("Query failed.");
                     } catch (Exception e) {
                         System.out.println("EXCEPTION:");
                         System.out.println(e.getMessage());
@@ -415,8 +445,13 @@ public class Client {
                     try {
                         Id = obj.getInt(arguments.elementAt(1));
                         location = obj.getString(arguments.elementAt(2));
-//                        price = rm.queryRoomsPrice(Id, location);
-//                        System.out.println("Price of Rooms at this location:" + price);
+
+                        m.cmd = CommandType.queryRoomsPrice;
+                        Reply r = cs.execute(m);
+                        if (r.isSuccess)
+                            System.out.println("Price of Rooms at this location:" + r.response.elementAt(0));
+                        else
+                            System.out.println("Query failed.");
                     } catch (Exception e) {
                         System.out.println("EXCEPTION:");
                         System.out.println(e.getMessage());

@@ -25,7 +25,7 @@ public class ResourceManagerThread extends ServerThread {
     @Override
     protected Reply processMsg(Msg m) {
         boolean isSuccess = false;
-        Reply r = new Reply(false, null);
+        Vector<Object> response = new Vector<>();
         switch (m.cmd) {
             case addCars:
                 isSuccess = RM.addCars(
@@ -67,13 +67,53 @@ public class ResourceManagerThread extends ServerThread {
                         (String) m.arg.elementAt(2));
                 break;
 
-            case deleteCustomer:
+            case queryCars:
+                response.add(RM.queryCars(
+                        Integer.parseInt((String) m.arg.elementAt(1)),
+                        (String) m.arg.elementAt(2)));
+                isSuccess = true;
                 break;
+
+            case queryCarsPrice:
+                response.add(RM.queryCarsPrice(
+                        Integer.parseInt((String) m.arg.elementAt(1)),
+                        (String) m.arg.elementAt(2)));
+                isSuccess = true;
+                break;
+
+            case queryFlight:
+                response.add(RM.queryFlight(
+                        Integer.parseInt((String) m.arg.elementAt(1)),
+                        Integer.parseInt((String) m.arg.elementAt(2))));
+                isSuccess = true;
+                break;
+
+            case queryFlightPrice:
+                response.add(RM.queryFlightPrice(
+                        Integer.parseInt((String) m.arg.elementAt(1)),
+                        Integer.parseInt((String) m.arg.elementAt(2))));
+                isSuccess = true;
+                break;
+
+            case queryRooms:
+                response.add(RM.queryRooms(
+                        Integer.parseInt((String) m.arg.elementAt(1)),
+                        (String) m.arg.elementAt(2)));
+                isSuccess = true;
+                break;
+
+            case queryRoomsPrice:
+                response.add(RM.queryRoomsPrice(
+                        Integer.parseInt((String) m.arg.elementAt(1)),
+                        (String) m.arg.elementAt(2)));
+                isSuccess = true;
+                break;
+
         }
 
 
 
-        r = new Reply(isSuccess, null);
+        Reply r = new Reply(isSuccess, response);
         // TODO: maybe send reserve cmd to server
         return r;
     }

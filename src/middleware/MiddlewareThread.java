@@ -36,6 +36,7 @@ class MiddlewareThread extends ServerThread {
         ResourceManagerInfo rm = null;
         ClientSocket cs = null;
         boolean isSuccess = false;
+        Reply r;
 
         // analyze client msg
         // select RM
@@ -55,7 +56,7 @@ class MiddlewareThread extends ServerThread {
 
             case newCustomer:
                 int id = localRM.newCustomer(Integer.parseInt((String) m.arg.elementAt(1)));
-                Reply r = new Reply(true, new Vector<>());
+                r = new Reply(true, new Vector<>());
                 r.response.add(id);
                 return r;
 
@@ -82,6 +83,39 @@ class MiddlewareThread extends ServerThread {
                         Integer.parseInt((String) m.arg.elementAt(1)),
                         Integer.parseInt((String) m.arg.elementAt(2)));
                 return new Reply(isSuccess, null);
+
+            case queryCars:
+                rm = selectRM(ServerType.Car);
+                break;
+
+            case queryCarsPrice:
+                rm = selectRM(ServerType.Car);
+                break;
+
+            case queryFlight:
+                rm = selectRM(ServerType.Flight);
+                break;
+
+            case queryFlightPrice:
+                rm = selectRM(ServerType.Flight);
+                break;
+
+            case queryRooms:
+                rm = selectRM(ServerType.Room);
+                break;
+
+            case queryRoomsPrice:
+                rm = selectRM(ServerType.Room);
+                break;
+
+            case queryCustomerInfo:
+                String bill = localRM.queryCustomerInfo(
+                        Integer.parseInt((String) m.arg.elementAt(1)),
+                        Integer.parseInt((String) m.arg.elementAt(1)));
+                r = new Reply(true, new Vector<>());
+                r.response.add(bill);
+                return r;
+
         }
 
         // if rm is not null (rm exists && not local rm)
