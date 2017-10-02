@@ -5,6 +5,7 @@ package client;
  */
 import Interfaces.CommandType;
 import Interfaces.Msg;
+import Interfaces.Reply;
 
 import java.util.*;
 import java.io.*;
@@ -65,6 +66,10 @@ public class Client {
             command = command.trim();
             arguments = obj.parse(command);
 
+            // init msg
+            Msg m = new Msg();
+            m.arg = arguments;
+
             //decide which of the commands this was
             switch (obj.findChoice((String) arguments.elementAt(0))) {
                 case 1: //help section
@@ -96,8 +101,6 @@ public class Client {
 
                         // TODO: refactor this
                         // serialize
-                        Msg m = new Msg();
-                        m.arg = arguments;
                         m.cmd = CommandType.addFlight;
 
                         if (cs.execute(m).isSuccess)
@@ -129,8 +132,6 @@ public class Client {
 
 
                         // serialize
-                        Msg m = new Msg();
-                        m.arg = arguments;
                         m.cmd = CommandType.addCars;
 
                         if (cs.execute(m).isSuccess)
@@ -161,8 +162,6 @@ public class Client {
                         price = obj.getInt(arguments.elementAt(4));
 
                         // serialize
-                        Msg m = new Msg();
-                        m.arg = arguments;
                         m.cmd = CommandType.addRooms;
                         if (cs.execute(m).isSuccess)
                             System.out.println("Rooms added");
@@ -183,9 +182,12 @@ public class Client {
                     System.out.println("Adding a new Customer using id:" + arguments.elementAt(1));
                     try {
                         Id = obj.getInt(arguments.elementAt(1));
-                        // TODO: not only return boolean
-//                        int customer = rm.newCustomer(Id);
-//                        System.out.println("new customer id:" + customer);
+                        m.cmd = CommandType.newCustomer;
+                        Reply r = cs.execute(m);
+                        if (r.isSuccess)
+                            System.out.println("new customer id:" + r.response.elementAt(0));
+                        else
+                            System.out.println("Customer could not be added");
                     } catch (Exception e) {
                         System.out.println("EXCEPTION:");
                         System.out.println(e.getMessage());
@@ -534,8 +536,14 @@ public class Client {
                     try {
                         Id = obj.getInt(arguments.elementAt(1));
                         Cid = obj.getInt(arguments.elementAt(2));
-//                        boolean customer = rm.newCustomer(Id, Cid);
-                        System.out.println("new customer id:" + Cid);
+
+                        m.cmd = CommandType.newcustomerid;
+                        Reply r = cs.execute(m);
+//                        System.out.print(r);
+                        if (r.isSuccess)
+                            System.out.println("new customer id:" + Cid);
+                        else
+                            System.out.println("Customer could not be added");
                     } catch (Exception e) {
                         System.out.println("EXCEPTION:");
                         System.out.println(e.getMessage());

@@ -12,6 +12,7 @@ import client.ClientSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.*;
 
 /**
  * Created by emol on 10/1/17.
@@ -19,7 +20,7 @@ import java.util.Set;
 class MiddlewareThread extends ServerThread {
     HashMap<ServerType, Set<ResourceManagerInfo>> resourceManagerInfo;
     HashMap<ResourceManagerInfo, ClientSocket> RMConnections;
-    RMImpl RM;  // RM for customer
+    RMImpl localRM;  // RM for customer
 
     public MiddlewareThread(Socket s,
                             HashMap<ServerType, Set<ResourceManagerInfo>> resourceManagerInfo,
@@ -28,44 +29,47 @@ class MiddlewareThread extends ServerThread {
         super(s);
         this.resourceManagerInfo = resourceManagerInfo;
         this.RMConnections = RMConnections;
-        this.RM = new RMImpl(m_itemHT);
+        this.localRM = new RMImpl(m_itemHT);
     }
 
     public Reply processMsg(Msg m){
         ResourceManagerInfo rm = null;
         ClientSocket cs = null;
-        Reply r;
+        boolean isSuccess = false;
 
         // analyze client msg
         // select RM
         switch (m.cmd) {
             case addCars:
-                // send to server
                 rm = selectRM(ServerType.Car);
                 // TODO: maybe send reserve cmd to server
                 break;
 
             case addRooms:
-                // send to server
                 rm = selectRM(ServerType.Room);
                 break;
 
             case addFlight:
-                // send to server
                 rm = selectRM(ServerType.Flight);
                 break;
 
+            case newCustomer:
+                int id = localRM.newCustomer(Integer.parseInt((String) m.arg.elementAt(1)));
+                Reply r = new Reply(true, new Vector<>());
+                r.response.add(id);
+                return r;
+
+            case newcustomerid:
+                isSuccess = localRM.newCustomer(
+                        Integer.parseInt((String) m.arg.elementAt(1)),
+                        Integer.parseInt((String) m.arg.elementAt(2)));
+                return new Reply(isSuccess, null);
         }
 
-        // forward result to client
-        if (rm != null) cs = RMConnections.get(rm);
-        r = cs.execute(m);
-        try {
-            this.out.writeObject(r);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return r;
+        // if rm is not null (rm exists && not local rm)
+            cs = RMConnections.get(rm);
+            return cs.execute(m);
+
     }
 
 

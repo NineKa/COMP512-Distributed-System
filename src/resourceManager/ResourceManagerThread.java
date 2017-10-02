@@ -53,12 +53,6 @@ public class ResourceManagerThread extends ServerThread {
 
 
         r = new Reply(isSuccess, null);
-        // forward result to client
-        try {
-            this.out.writeObject(r);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         // TODO: maybe send reserve cmd to server
         return r;
     }

@@ -36,7 +36,7 @@ public class ClientSocket {
         }
     }
 
-    public Reply execute(Msg m) {
+    public synchronized Reply execute(Msg m) {
         Reply r = null;
         try {
             out.writeObject(m);
