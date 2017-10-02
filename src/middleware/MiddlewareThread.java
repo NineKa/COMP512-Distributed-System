@@ -118,20 +118,24 @@ class MiddlewareThread extends ServerThread {
                 rm = selectRM(ServerType.Car);
                 cs = RMConnections.get(rm);
                 return localRM.customerReserve(
-                        Integer.parseInt((String) m.arg.elementAt(1)),
-                        Integer.parseInt((String) m.arg.elementAt(2)),
-                        (String) m.arg.elementAt(3),
                         cs,
                         m
                 );
 
             case reserveFlight:
                 rm = selectRM(ServerType.Flight);
-                break;
+                cs = RMConnections.get(rm);
+                return localRM.customerReserve(
+                        cs,
+                        m
+                );
 
             case reserveRoom:
                 rm = selectRM(ServerType.Room);
-                break;
+                cs = RMConnections.get(rm);
+                return localRM.customerReserve(
+                        cs,
+                        m);
 
 
         }

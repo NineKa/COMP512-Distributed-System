@@ -116,10 +116,16 @@ public class ResourceManagerThread extends ServerThread {
                         (String) m.arg.elementAt(3));
 
             case reserveFlight:
-                break;
+                return RM.reserveFlight(
+                        Integer.parseInt((String) m.arg.elementAt(1)),
+                        Integer.parseInt((String) m.arg.elementAt(2)),
+                        Integer.parseInt((String) m.arg.elementAt(3)));
 
             case reserveRoom:
-                break;
+                return RM.reserveRoom(
+                        Integer.parseInt((String) m.arg.elementAt(1)),
+                        Integer.parseInt((String) m.arg.elementAt(2)),
+                        (String) m.arg.elementAt(3));
 
 
         }

@@ -93,12 +93,17 @@ public class RMImpl {
 
 
     // called in middleware server
-    public Reply customerReserve(int id, int customerID, String location, ClientSocket cs, Msg m){
+    public Reply customerReserve(ClientSocket cs, Msg m){
+        int id = Integer.parseInt((String) m.arg.elementAt(1));
+
+        int customerID = Integer.parseInt((String) m.arg.elementAt(2));
+        String other = (String) m.arg.elementAt(3); // location for car/room, flightNum for flight
+
         Reply r = new Reply(false, new Vector());
         // Read customer object if it exists (and read lock it)
         Customer cust = (Customer) readData( id, Customer.getKey(customerID) );
         if ( cust == null ) {{
-            Trace.warn("RM::reserveItem( " + id + ", " + customerID + ", " + location+")  failed--customer doesn't exist" );
+            Trace.warn("RM::reserveItem( " + id + ", " + customerID + ", " + other +")  failed--customer doesn't exist" );
             return r;
         }}
 
@@ -107,8 +112,8 @@ public class RMImpl {
         if (r.isSuccess){
             String key = (String) r.response.elementAt(1);
             int price = (int) r.response.elementAt(0);
-            Trace.info("RM::reserveItem( " + id + ", customer=" + customerID + ", " +key+ ", "+location+" ) called" );
-            cust.reserve( key, location, price);
+            Trace.info("RM::reserveItem( " + id + ", customer=" + customerID + ", " +key+ ", "+ other +" ) called" );
+            cust.reserve( key, other, price);
             writeData( id, cust.getKey(), cust );
         }
         return r;
