@@ -561,10 +561,12 @@ public class Client {
                         Car = obj.getBoolean(arguments.elementAt(arguments.size() - 2));
                         Room = obj.getBoolean(arguments.elementAt(arguments.size() - 1));
 
-//                        if (rm.itinerary(Id, customer, flightNumbers, location, Car, Room))
-//                            System.out.println("Itinerary Reserved");
-//                        else
-//                            System.out.println("Itinerary could not be reserved.");
+                        m.cmd = CommandType.itinerary;
+                        Reply r = cs.execute(m);
+                        if (r.isSuccess)
+                            System.out.println("Itinerary Reserved");
+                        else
+                            System.out.println("Itinerary could not be reserved.");
                     } catch (Exception e) {
                         System.out.println("EXCEPTION:");
                         System.out.println(e.getMessage());

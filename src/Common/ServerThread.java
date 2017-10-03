@@ -46,7 +46,8 @@ public abstract class ServerThread implements Runnable {
                     this.out.writeObject(r);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println("Exiting...");
+//                e.printStackTrace();
                 exit(1);
             }
         }

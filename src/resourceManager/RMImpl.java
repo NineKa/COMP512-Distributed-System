@@ -1,11 +1,14 @@
 package resourceManager;
 
+import Interfaces.CommandType;
 import Interfaces.Msg;
 import Interfaces.Reply;
+import Interfaces.ServerType;
 import client.ClientSocket;
 
 import java.util.Calendar;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Vector;
 
 /**
@@ -119,6 +122,150 @@ public class RMImpl {
         return r;
     }
 
+
+    // called in middleware server
+    public Reply customerReserveItinerary(HashMap<ServerType, ClientSocket> css, Msg m){
+        int id = Integer.parseInt((String) m.arg.elementAt(1));
+
+        int customerID = Integer.parseInt((String) m.arg.elementAt(2));
+        int[] flightNums = new int[m.arg.size() - 6];
+
+        for (int i = 0; i < m.arg.size() - 6; i++)
+            flightNums[i] = Integer.parseInt((String) m.arg.elementAt(3 + i));
+
+        String location = (String) m.arg.elementAt(m.arg.size() - 3); // location for car/room, flightNum for flight
+        boolean carToBook = new Boolean((String) m.arg.elementAt(m.arg.size() - 2)).booleanValue();
+        boolean roomToBook = new Boolean((String) m.arg.elementAt(m.arg.size() - 1)).booleanValue();
+
+
+
+        Reply r = new Reply(false, new Vector());
+        // Read customer object if it exists (and read lock it)
+        Customer cust = (Customer) readData( id, Customer.getKey(customerID) );
+        if ( cust == null ) {{
+            Trace.warn("RM::reserveItinerary( " + id + ", " + customerID + ", " + ")  failed--customer doesn't exist" );
+            return r;
+        }}
+
+        // split msg to sub msgs
+        boolean rollback = false;
+        HashMap<Msg, Reply> subMsg = new HashMap<>();
+        for (int i = 0; i< flightNums.length; i++){
+            Msg subM = new Msg();
+            subM.cmd = CommandType.reserveFlight;
+            subM.arg = new Vector();
+            subM.arg.add(CommandType.reserveFlight);
+            subM.arg.add("" + id);
+            subM.arg.add("" + customerID);
+            subM.arg.add("" + flightNums[i]);
+            Reply subR = css.get(ServerType.Flight).execute(subM);
+            subMsg.put(subM, subR);
+            if (!subR.isSuccess) {
+                rollback = true;
+                break;
+            }
+        }
+        if (!rollback){
+            if (carToBook){
+                Msg subM = new Msg();
+                subM.cmd = CommandType.reserveCar;
+                subM.arg = new Vector();
+                subM.arg.add(CommandType.reserveCar);
+                subM.arg.add("" + id);
+                subM.arg.add("" + customerID);
+                subM.arg.add(location);
+                Reply subR = css.get(ServerType.Car).execute(subM);
+                subMsg.put(subM, subR);
+                if (!subR.isSuccess) {
+                    rollback = true;
+                }
+            }
+            if (!rollback && roomToBook){
+                Msg subM = new Msg();
+                subM.cmd = CommandType.reserveRoom;
+                subM.arg = new Vector();
+                subM.arg.add(CommandType.reserveRoom);
+                subM.arg.add("" + id);
+                subM.arg.add("" + customerID);
+                subM.arg.add(location);
+                Reply subR = css.get(ServerType.Room).execute(subM);
+                subMsg.put(subM, subR);
+                if (!subR.isSuccess) {
+                    rollback = true;
+                }
+            }
+        }
+
+        if (rollback){
+            for (Msg msg : subMsg.keySet()){
+                if (subMsg.get(msg).isSuccess){
+                    ClientSocket cs = null;
+                    // roll back -> send reverse cmd
+                    Msg rMsg = new Msg();
+                    switch (msg.cmd){
+                        case reserveRoom:
+                            rMsg.cmd = CommandType.unreserveRoom;
+                            cs = css.get(ServerType.Room);
+                            break;
+                        case reserveFlight:
+                            rMsg.cmd = CommandType.unreserveFlight;
+                            cs = css.get(ServerType.Flight);
+                            break;
+                        case reserveCar:
+                            rMsg.cmd = CommandType.unreserveCar;
+                            cs = css.get(ServerType.Car);
+                            break;
+                    }
+                    rMsg.arg = msg.arg;
+                    Reply rr = cs.execute(rMsg);
+                }
+            }
+
+            return new Reply(false, null);
+        }
+
+        else {
+            // all success
+            for (Msg msg : subMsg.keySet()){
+                String key = (String) subMsg.get(msg).response.elementAt(1);
+                int price = (int) subMsg.get(msg).response.elementAt(0);
+                String other = (String) msg.arg.elementAt(3);
+                Trace.info("RM::reserveItem( " + id + ", customer=" + customerID + ", " +key+ ", "+ other +" ) called" );
+                cust.reserve( key, other, price);
+                writeData( id, cust.getKey(), cust );
+            }
+        }
+        return new Reply(true, null);
+
+    }
+
+    // called in middleware server
+    public Reply customerUnreserve(ClientSocket cs, Msg m){
+        int id = Integer.parseInt((String) m.arg.elementAt(1));
+
+        int customerID = Integer.parseInt((String) m.arg.elementAt(2));
+        String other = (String) m.arg.elementAt(3); // location for car/room, flightNum for flight
+
+        Reply r = new Reply(false, new Vector());
+        // Read customer object if it exists (and read lock it)
+        Customer cust = (Customer) readData( id, Customer.getKey(customerID) );
+        if ( cust == null ) {{
+            Trace.warn("RM::unreserveItem( " + id + ", " + customerID + ", " + other +")  failed--customer doesn't exist" );
+            return r;
+        }}
+
+        r = cs.execute(m);
+
+        if (r.isSuccess){
+            String key = (String) r.response.elementAt(1);
+            int price = (int) r.response.elementAt(0);
+            Trace.info("RM::unreserveItem( " + id + ", customer=" + customerID + ", " +key+ ", "+ other +" ) called" );
+            cust.reserve( key, other, price);
+            writeData( id, cust.getKey(), cust );
+        }
+        return r;
+    }
+
     // reserve an item
     protected Reply reserveItem(int id, int customerID, String key, String location) {
         Reply r = new Reply(false, new Vector());
@@ -139,6 +286,33 @@ public class RMImpl {
             item.setReserved(item.getReserved()+1);
 
             Trace.info("RM::reserveItem( " + id + ", " + customerID + ", " + key + ", " +location+") succeeded" );
+            r.isSuccess = true;
+            r.response.add(item.getPrice());
+            r.response.add(item.getKey());
+        }
+
+        return r;
+    }
+
+    // reserve an item
+    protected Reply unreserveItem(int id, int customerID, String key, String location) {
+        Reply r = new Reply(false, new Vector());
+
+        Trace.info("RM::unreserveItem( " + id + ", customer=" + customerID + ", " +key+ ", "+location+" ) called" );
+
+
+        // check if the item is available
+        ReservableItem item = (ReservableItem)readData(id, key);
+        if ( item == null ) {
+            Trace.warn("RM::unreserveItem( " + id + ", " + customerID + ", " + key+", " +location+") failed--item doesn't exist" );
+        }
+        else {
+
+            // increase the number of available items in the storage
+            item.setCount(item.getCount() + 1);
+            item.setReserved(item.getReserved() - 1);
+
+            Trace.info("RM::unreserveItem( " + id + ", " + customerID + ", " + key + ", " +location+") succeeded" );
             r.isSuccess = true;
             r.response.add(item.getPrice());
             r.response.add(item.getKey());

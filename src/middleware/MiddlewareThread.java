@@ -137,7 +137,12 @@ class MiddlewareThread extends ServerThread {
                         cs,
                         m);
 
-
+            case itinerary:
+                HashMap<ServerType, ClientSocket> css = new HashMap<>();
+                css.put(ServerType.Room, RMConnections.get(selectRM(ServerType.Room)));
+                css.put(ServerType.Car, RMConnections.get(selectRM(ServerType.Car)));
+                css.put(ServerType.Flight, RMConnections.get(selectRM(ServerType.Flight)));
+                return localRM.customerReserveItinerary(css, m);
         }
 
         // if rm is not null (rm exists && not local rm)
